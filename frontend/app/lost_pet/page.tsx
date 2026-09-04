@@ -1,13 +1,18 @@
 "use client";
 import Image from "next/image";
-import Input_Box from "../input";
+import Input_Box from "../InputComponent";
 import logo from '../Logo.png';
 import { useState } from "react";
-import { MapPinPlus, X } from "lucide-react";
+import { MapPinPlus, Send, X } from "lucide-react";
 
 export default function Lost_Pet_Page(){
+    const [name, setName] = useState<string>('');
     const [files, setFiles] = useState<File[]>([]);
     const [location, setLocation] = useState<{ latitude: number; longitude: number;} | null>(null);
+    const [date, setDate] = useState<string>('');
+    const [time, setTime] = useState<string>('');
+    const [error, setError] = useState<string>("");
+    const [locationLoading, setLocationLoading] = useState(false);
 
     function onClickRemoveFile(fileToRemove: File){
         console.log(fileToRemove)
@@ -16,22 +21,81 @@ export default function Lost_Pet_Page(){
         });
     }
 
-    function getGeolocation(){
+    function getGeolocation() {
+        setError("");
+
         if (!navigator.geolocation) {
-            alert("Geolocation is not supported by your browser.");
+            setError("Geolocation is not supported by your browser.");
             return;
         }
-        navigator.geolocation.getCurrentPosition((e) => {
+
+        setLocationLoading(true);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
             setLocation({
-                latitude: e.coords.latitude,
-                longitude: e.coords.longitude
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
             });
-        })
+
+            setLocationLoading(false);
+            },
+
+            (error) => {
+                setLocationLoading(false);
+
+                if (error.code === error.PERMISSION_DENIED) {
+                    setError(
+                    "Location permission was denied. Please enable location access and try again."
+                    );
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    setError(
+                    "Your current location is unavailable. Please try again."
+                    );
+                } else if (error.code === error.TIMEOUT) {
+                    setError(
+                    "Location request timed out. Please try again."
+                    );
+                } else {
+                    setError(
+                    "Unable to get your current location."
+                    );
+                }
+            },{ enableHighAccuracy: true, timeout: 10000, maximumAge: 0,}
+        );
+    }
+
+    function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setError("");
+        if (files.length === 0) {
+            setError("Please upload at least one photo of your pet.");
+            return;
+        }
+        if (!name.trim()) {
+            setError("Please enter your pet's name.");
+            return;
+        }
+        if (!location) {
+            setError("Please provide the last seen location.");
+            return;
+        }
+        if (!date) {
+            setError("Please select the date when your pet was last seen.");
+            return;
+        }
+        if (!time) {
+            setError("Please select the time when your pet was last seen.");
+            return;
+        }
+
+        console.log({name,files,location,date,time,});
+        console.log("Form submitted successfully!");
     }
 
     return (
-    <div className="min-h-screen relative flex justify-center items-center">
-        <div className="absolute top-0 left-0 w-full flex items-center justify-between gap-8 px-8 py-4
+    <div className="min-h-screen flex flex-col justify-center items-center bg-white">
+        <div className="w-full flex items-center justify-between gap-8 px-8 py-4
         bg-white text-black border-b-2 border-gray-400">
             <Image
                 src={logo}
@@ -46,7 +110,9 @@ export default function Lost_Pet_Page(){
                 </p>
             </div>
         </div>
-        <form className="bg-white w-full px-4 text-black">
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="bg-white w-full px-4 text-black border-b-2 border-gray-400 pb-4">
             {/* Text Section */}
             <div className="flex flex-col gap-3 p-4">
                 <h1 className="text-2xl font-bold">
@@ -85,22 +151,26 @@ export default function Lost_Pet_Page(){
             {/* Pet Name Section */}
             <div className="flex flex-col m-2 gap-1">
                 <p className="font-bold text-sm">Pet Name</p>
-                <input type="text" placeholder="Pet Name" className="p-3" />
+                <input type="text" placeholder="Pet Name" className="p-3" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
 
             {/* Location Section */}
-            <div className="flex flex-col my-4 mx-2 gap-1">
+            <div className="flex flex-col my-4 mx-1 gap-1">
                 <p className="font-bold text-sm">Last seen location</p>
-                <div className="flex gap justify-between">
-                    <div className="p-1 w-full">
+                <div className="flex gap justify-between items-center">
+                    <div className="w-full text-sm">
                         {location ? `${location?.latitude}, ${location?.longitude}` : "Enter Coordinates"}
                     </div>
                     <button
                         type="button"
                         onClick={getGeolocation}
-                        className="p-1"
+                        disabled={locationLoading}
+                        className="flex justify-center items-center cursor-pointer bg-orange-100 rounded-xl p-1.5 text-orange-700 font-bold disabled:opacity-50"
                     >
-                        <MapPinPlus size={25}/>
+                        <p className="text-xs">
+                            {locationLoading ? "Getting Location...": "Use Current Location"}
+                        </p>
+                        <MapPinPlus size={40} />
                     </button>
                 </div>
             </div>
@@ -108,11 +178,43 @@ export default function Lost_Pet_Page(){
             {/* Date and Time Section */}
             <div className="flex flex-col gap-1 m-2">
                 <p className="font-bold text-sm" >Last seen date & time</p>
-                <div className="flex">
-
+                <div className="grid grid-cols-2 gap-10">
+                    <input 
+                        type="date" 
+                        className="w-full p-2 border border-gray-400"
+                        onChange={(e) => setDate(e.target.value)} 
+                    />
+                    <input 
+                        type="time" 
+                        className="w-full p-2 border border-gray-400"
+                        onChange={(e) => setTime(e.target.value)} />
                 </div>
             </div>
+
+            {/* Error */}
+            {error && (
+                <div className="mx-4 mt-4 mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 text-sm">
+                    {error}
+                </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-center m-4">
+                <button type="submit" className="bg-orange-500 min-w-1/2 p-4 flex justify-center gap-8 rounded-xl hover:shadow-xl">
+                    <p className="text-white">Submit</p>
+                    <Send size={20} color="white"/>
+                </button>
+            </div>
+
+            <p className="text-gray-500 text-xs font-bold text-center">
+                Your report is saved securely, so PawMatch can help support your search.
+            </p>
         </form>
+
+        {/* End */}
+        <div className="text-center p-2">
+            <p className="text-gray-500 text-xs font-bold">Made with care for every reunion.</p>
+        </div>
     </div>
     );
 }
