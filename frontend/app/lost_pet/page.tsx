@@ -13,6 +13,7 @@ export default function Lost_Pet_Page(){
     const [time, setTime] = useState<string>('');
     const [error, setError] = useState<string>("");
     const [locationLoading, setLocationLoading] = useState(false);
+    const [description, setDescription] =  useState<string>('');
 
     function onClickRemoveFile(fileToRemove: File){
         console.log(fileToRemove)
@@ -151,7 +152,7 @@ export default function Lost_Pet_Page(){
             {/* Pet Name Section */}
             <div className="flex flex-col m-2 gap-1">
                 <p className="font-bold text-sm">Pet Name</p>
-                <input type="text" placeholder="Pet Name" className="p-3" value={name} onChange={(e) => setName(e.target.value)} />
+                <input type="text" placeholder="Pet Name" className="p-3 border border-gray-400" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
 
             {/* Location Section */}
@@ -191,6 +192,13 @@ export default function Lost_Pet_Page(){
                 </div>
             </div>
 
+            {/* Description */}
+            <div className="flex flex-col m-2 my-4 gap-1">
+                <p className="font-bold text-sm">Add Additional Details</p>
+                <textarea placeholder="Description, Collar colour, temperament, where they may be headed, or anything else that could help"
+                className="p-3 text-md border border-gray-400" value={description} onChange={(e) => setDescription(e.target.value)} />
+            </div>
+
             {/* Error */}
             {error && (
                 <div className="mx-4 mt-4 mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 text-sm">
@@ -200,8 +208,8 @@ export default function Lost_Pet_Page(){
 
             {/* Submit Button */}
             <div className="flex justify-center m-4">
-                <button type="submit" className="bg-orange-500 min-w-1/2 p-4 flex justify-center gap-8 rounded-xl hover:shadow-xl">
-                    <p className="text-white">Submit</p>
+                <button type="submit" className="bg-orange-500 min-w-1/2 p-4 px-8 flex justify-center gap-8 rounded-xl hover:shadow-xl">
+                    <p className="text-white">Report Lost Pet</p>
                     <Send size={20} color="white"/>
                 </button>
             </div>
