@@ -1,0 +1,29 @@
+/.vscode/
+
+# ml
+/backend/ml/datasets/
+/backend/ml-service/__pycache__/
+/backend/ml-service/venv/
+/backend/ml-service/best_model.pth
+
+/backend/ml-service/.env
+__pycache__/
+*.pyc
+
+# next
+
+/frontend/node_modules
+/frontend/coverage
+/frontend/.next/
+/frontend/out/
+
+/frontend/build
+/frontend/npm-debug.log*
+/frontend/.env*
+/frontend/*.tsbuildinfo
+/frontend/next-env.d.ts
+/frontend/.vercel
+
+
+/frontend/app/generated/prisma
+/frontend/skills-lock.json
