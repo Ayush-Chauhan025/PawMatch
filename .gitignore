@@ -27,3 +27,4 @@ __pycache__/
 
 /frontend/app/generated/prisma
 /frontend/skills-lock.json
+/frontend/package-lock.json
