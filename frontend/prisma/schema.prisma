@@ -1,0 +1,59 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+enum ReportType {
+  LOST
+  SPOTTED
+}
+
+enum ReportStatus {
+  ACTIVE
+  RESOLVED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reports PetReport[]
+}
+
+model PetReport {
+  id           String       @id @default(cuid())
+  type         ReportType
+  status       ReportStatus @default(ACTIVE)
+  name         String?
+  description  String?
+  latitude     Float
+  longitude    Float
+  lastSeenDate DateTime     @default(now())
+  lastSeenTime String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  images    PetImage[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model PetImage {
+  id          String    @id @default(cuid())
+  url         String
+  petReportId String
+  petReport   PetReport @relation(fields: [petReportId], references: [id], onDelete: Cascade)
+
+  embedding Unsupported("vector(256)")?
+
+  createdAt DateTime @default(now())
+}
