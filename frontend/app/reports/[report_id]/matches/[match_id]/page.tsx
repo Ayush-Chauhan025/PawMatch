@@ -129,7 +129,7 @@ export default function Report(){
                                     </span>
                                 </div>
                                 <h1 className="text-4xl font-extrabold text-gray-900 mt-2">
-                                    {state.name ? `Missing: ${state.name}` : 'Help Identify This Pet'}
+                                    {state.name ? `${state.type === 'LOST' ? 'Missing' : 'Spotted'}: ${state.name}` : 'Help Identify This Pet'}
                                 </h1>
                                 <p className="text-sm text-gray-500 font-medium mt-1">
                                     Reported on {new Date(state.createdAt).toLocaleDateString()}
@@ -208,7 +208,7 @@ export default function Report(){
                             className="w-full md:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg rounded-xl shadow-lg transition-transform hover:scale-[1.02]"
                         >
                             <Mail size={24} />
-                            Email {state.type === 'LOST' ? 'Finder' : 'Owner'}
+                            Email {state.type === 'LOST' ? 'Owner' : 'Finder'}
                         </button>
                     </div>
                 </div>
