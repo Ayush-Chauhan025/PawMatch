@@ -39,11 +39,8 @@ export default function Home() {
           </p>
         </div>
         <div className="flex items-center gap-10 p-4">
-          <Link href="/lost_pet" className="text-white font-bold bg-orange-500 py-3 px-5 rounded-2xl border-2 border-orange-600">
-            Report a Lost Pet
-          </Link>
-          <Link href="/spotted_pet" className="font-bold bg-white py-3 px-5 text-black rounded-2xl border-2 border-gray-300">
-            I found a Pet
+          <Link href='/reports' className="text-white font-bold bg-orange-500 py-2 px-5 rounded-4xl border-2 border-orange-600">
+            Get Started
           </Link>
         </div>
       </div>
