@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import { useParams, useRouter } from "next/navigation"
-import { useEffect, useReducer } from "react"
+import { useEffect, useReducer, useState, useTransition } from "react"
 import Link from "next/link";
 import Image from "next/image";
 import logo from '../../Logo.png';
 import getData from "./actions";
-import { MapPin, Calendar, Clock, Info, Search } from "lucide-react";
+import { MapPin, Calendar, Clock, Info, Search, Globe, HeartHandshake } from "lucide-react";
+import { markReportResolved } from "./actions";
 
 type Report = {
     name : string | null;
@@ -115,15 +116,24 @@ export default function Report(){
 
                         {/* SEARCH BUTTON */}
                         <div className="mt-4">
-                            <Link 
-                                href={`/reports/${report_id}/matches`} 
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-md transition-transform hover:scale-105 active:scale-95"
-                            >
-                                <Search size={20} />
-                                Search Nearby Matches
-                            </Link>
+                            <div className="flex gap-10">
+                                <Link 
+                                    href={`/reports/${report_id}/matches`} 
+                                    className="inline-flex items-center gap-2 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-md transition-transform hover:scale-105 active:scale-95"
+                                >
+                                    <Search size={20} />
+                                    Smart Search
+                                </Link>
+                                <Link 
+                                    href={`/reports/${report_id}/nearby`} 
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-md transition-transform hover:scale-105 active:scale-95"
+                                >
+                                    <Globe size={20} />
+                                    Explore Nearby
+                                </Link>
+                            </div>
                             <p className="text-xs text-gray-500 mt-2 ml-1">
-                                Uses PawMatch AI to scan recent {state.type === 'LOST' ? 'spotted' : 'lost'} reports.
+                                Uses PawMatch&apos;s Smart Search to scan recent {state.type === 'LOST' ? 'spotted' : 'lost'} reports.
                             </p>
                         </div>
                     </div>
@@ -194,9 +204,52 @@ export default function Report(){
                             </p>
                         </div>
 
+                        <div className="mt-8 pt-6 border-t border-gray-200">
+                            <h3 className="text-center text-gray-500 font-bold mb-4">
+                                Did this pet make it home safely?
+                            </h3>
+                            <ReunionButton 
+                                reportId={String(report_id)} 
+                                initialStatus={state.status} 
+                            />
+                        </div>
                     </div>
                 </div>
             )}
         </div>
+    );
+}
+
+function ReunionButton({ reportId, initialStatus }: { reportId: string, initialStatus: string }) {
+    const [isPending, startTransition] = useTransition();
+    const [isResolved, setIsResolved] = useState(initialStatus === 'RESOLVED');
+
+    const handleResolve = () => {
+        startTransition(async () => {
+            const result = await markReportResolved(reportId);
+            if (result.success) {
+                setIsResolved(true);
+            }
+        });
+    };
+
+    if (isResolved) {
+        return (
+            <div className="w-full bg-green-50 text-green-700 font-bold py-4 rounded-xl flex justify-center items-center gap-3 border-2 border-green-500 shadow-sm mt-4">
+                <HeartHandshake size={24} />
+                Successfully Reunited!
+            </div>
+        );
+    }
+
+    return (
+        <button 
+            onClick={handleResolve}
+            disabled={isPending}
+            className="w-full mt-4 bg-orange-500 text-white font-extrabold py-4 rounded-xl hover:bg-orange-600 hover:shadow-lg transition-all flex justify-center items-center gap-3 disabled:opacity-50"
+        >
+            <HeartHandshake size={24} />
+            {isPending ? 'Closing Report...' : 'Mark as Reunited'}
+        </button>
     );
 }
