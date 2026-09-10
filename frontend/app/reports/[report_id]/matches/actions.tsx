@@ -80,7 +80,7 @@ export default async function get_AI_Result(report_id: string) {
             FROM "PetReport" t
             JOIN target_visuals tv ON t.id = tv.target_id
             CROSS JOIN source_report sr
-            WHERE t.type != sr.type AND t."userId" != sr."userId"
+            WHERE t.type != sr.type AND t."userId" != sr."userId" AND t.status = 'ACTIVE'
         ) 
         SELECT 
             *, 
