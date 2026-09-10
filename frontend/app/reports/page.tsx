@@ -9,6 +9,7 @@ export default async function MyReportsPage() {
     const reports = await prisma.petReport.findMany({
         where: {
             userId: 'test-user-id-123',
+            status: 'ACTIVE'
         },
         include: {
             images: true,
