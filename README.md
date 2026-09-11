@@ -65,5 +65,83 @@ PawMatch is split into a Next.js application and a separate Python service for i
                     ┌───────┴────────┐
                     │   FastAPI      │
                     │   PyTorch      │
-                    │   ResNet-50    │
                     └────────────────┘
+```
+## Running Locally
+
+### Prerequisites
+
+Ensure your local development environment has the following installed:
+*   **Node.js** (v18+) and **npm**
+*   **Python** (v3.9+)
+*   **PostgreSQL** (must have the `pgvector` extension enabled)
+*   **Supabase** (an active project for image storage)
+
+---
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/Ayush-Chauhan025/PawMatch.git](https://github.com/Ayush-Chauhan025/PawMatch.git)
+cd PawMatch
+```
+
+### 2. Set Up the Frontend
+Navigate to the frontend directory and install the necessary packages:
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file inside the `frontend` directory and add your connection strings:
+```env
+DATABASE_URL="your-database-url"
+SUPABASE_URL="your-supabase-url"
+SUPABASE_ANON_KEY="your-supabase-anon-key"
+ML_SERVICE_URL="[http://127.0.0.1:8000](http://127.0.0.1:8000)"
+```
+
+Apply the database schema to PostgreSQL and generate the Prisma client:
+```bash
+npx prisma db push
+npx prisma generate
+```
+
+### 3. Set Up the ML Service
+Open a new terminal window from the project root and navigate to the Python service:
+```bash
+cd backend/ml-service
+python -m venv venv
+```
+
+Activate the virtual environment:
+```bash
+# Linux / macOS
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate
+```
+
+Install the required Python dependencies:
+```bash
+pip install fastapi uvicorn python-multipart torch torchvision Pillow
+```
+
+### 4. Start the ML Service
+Verify that your trained model checkpoint is available in the expected location, then boot the FastAPI server:
+```bash
+uvicorn main:app --reload
+```
+*The ML service is now active at `http://127.0.0.1:8000`.*
+
+### 5. Start the Frontend
+Open a final terminal window, navigate back to the frontend, and start the Next.js development server:
+```bash
+cd frontend
+npm run dev
+```
+
+### Verification
+You should now have both core services running concurrently:
+*   **Frontend UI:** `http://localhost:3000`
+*   **ML API Service:** `http://127.0.0.1:8000`
