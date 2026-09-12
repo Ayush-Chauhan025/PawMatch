@@ -145,3 +145,11 @@ npm run dev
 You should now have both core services running concurrently:
 *   **Frontend UI:** `http://localhost:3000`
 *   **ML API Service:** `http://127.0.0.1:8000`
+
+> **Note:** The trained model checkpoint is not included in the repository due to
+> file size. The demo video shows the complete working application and its
+> image-matching functionality.
+
+# Demo
+
+[![PawMatch Demo](https://img.youtube.com/vi/GiAwnsMdjXA/0.jpg)](https://youtube.com/shorts/GiAwnsMdjXA?feature=share)
